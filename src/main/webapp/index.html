@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>QR Code Generator</title>
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+</head>
+
+<body>
+
+	<h1>QR CODE GENERATOR</h1>
+
+	<div ng-app="qrApp" ng-controller="mainController">
+
+		<img alt="qr code" hight="300px" width="300px"
+			ng-src="{{qrImage}}" /> </br>
+
+
+	</div>
+
+</body>
+
+<script>
+	var app = angular.module('qrApp', []);
+	app.controller('mainController', function($scope, $http) {
+
+		$scope.qrImage = null;
+		
+		$scope.go =  function(){
+			console.log("Button clicked");
+			console.log("Image : ",$scope.qrImage);
+		}
+
+		function loadQR() {
+
+			$http.get("/api/qr/static").then(function onSuccess(response) {
+
+				$scope.qrImage = response.data;
+				console.log("QR Image : ", $scope.qrImage);
+
+			}, function onError(error) {
+				console.log("Error occured , reason : ", error);
+			});
+
+		}
+		
+		$scope.arrayBufferToBase64 = function(  ) {
+			console.log("Array buffer to base 64 conversion");
+			buffer = $scope.qrImage;
+		    var binary = '';
+		    var bytes = new Uint8Array( buffer );
+		    var len = bytes.byteLength;
+		    for (var i = 0; i < len; i++) {
+		        binary += String.fromCharCode( bytes[ i ] );
+		    }
+		    var imageData =  window.btoa( binary );
+		    console.log("Image Data : ",imageData);
+		    return imageData;
+		}
+
+		loadQR();
+
+	});
+</script>
+
+
+</html>
