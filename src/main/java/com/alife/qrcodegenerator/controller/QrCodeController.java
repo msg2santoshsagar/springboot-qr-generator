@@ -24,47 +24,51 @@ import com.google.zxing.qrcode.QRCodeWriter;
 @RestController
 @RequestMapping(value="/api/qr")
 public class QrCodeController {
-	
+
 	@PostMapping(value="/generate",consumes=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, String> generateQr(@RequestBody Map<String, String> mapParam){
-		
+	public String generateQr(@RequestBody Map<String, String> mapParam) throws WriterException, IOException{
+
 		System.out.println("Request to generate qr for "+mapParam);
-		
-		return mapParam;
+
+		byte[] imageBytes = getQRCodeImage(mapParam.toString(), 500, 500);
+
+		String b64 =Base64.encodeBase64String(imageBytes);
+
+		return "data:image/png;base64,"+b64;
 	}
-	
+
 	@GetMapping(value="/static",produces=MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public String generateStaticQr() throws WriterException, IOException{
-		
+
 		Map<String, String> map = new HashMap<>();
-		
+
 		map.put("name", "Santosh Sagar");
 		map.put("age", "24");
 		map.put("work", "Programmer");
-		
+
 		System.out.println("Request to generate static qr for "+map);
-		
-		
+
+
 		byte[] imageBytes = getQRCodeImage(map.toString(), 500, 500);
-		
+
 		String b64 =Base64.encodeBase64String(imageBytes);
-		
+
 		return "data:image/png;base64,"+b64;
-		
+
 	}
-	
-	
+
+
 	private byte[] getQRCodeImage(String text, int width, int height) throws WriterException, IOException {
-	   
+
 		QRCodeWriter qrCodeWriter = new QRCodeWriter();
-	    BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-	    
-	    ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-	    MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
-	    byte[] pngData = pngOutputStream.toByteArray(); 
-	    return pngData;
+		BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
+
+		ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+		MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+		byte[] pngData = pngOutputStream.toByteArray(); 
+		return pngData;
 	}
-	
-	
+
+
 
 }
