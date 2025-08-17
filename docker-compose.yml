@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    image: qrcodegenerator:0.0.1
+    container_name: qrcodegenerator
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError
+    restart: unless-stopped

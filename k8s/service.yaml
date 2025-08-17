@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qrcode-svc
+  labels:
+    app: qrcode
+spec:
+  selector:
+    app: qrcode
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      nodePort: 30080
+  type: NodePort

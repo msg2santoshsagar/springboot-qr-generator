@@ -1,0 +1,8 @@
+# keep the built jar; ignore the rest of target
+target/*
+!target/*.jar
+**/.DS_Store
+.mvn/
+.git/
+.idea/
+*.iml
