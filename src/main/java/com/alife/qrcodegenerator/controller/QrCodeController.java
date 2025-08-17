@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +35,12 @@ public class QrCodeController {
         Map<String, String> map = new HashMap<>();
 
         map.put("name", "Santosh Sagar");
-        map.put("age", "24");
-        map.put("work", "Programmer");
+        map.put("role", "Software Engineer");
+        map.put("email", "msg2santoshsagar@gmail.com");
+        map.put("website", "https://msg2santoshsagar.github.io");
+        map.put("location", "Chennai, India");
+        map.put("timestamp", Instant.now().toString());
+        map.put("note", "Static demo QR code with generic details");
 
         log.info("Request to generate static qr code for : {} ", map);
 
