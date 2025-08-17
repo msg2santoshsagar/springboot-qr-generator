@@ -1,74 +1,56 @@
 package com.alife.qrcodegenerator.controller;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
-
+@Slf4j
 @RestController
-@RequestMapping(value="/api/qr")
+@RequestMapping(value = "/api/qr")
 public class QrCodeController {
 
-	@PostMapping(value="/generate",consumes=MediaType.APPLICATION_JSON_VALUE)
-	public String generateQr(@RequestBody Map<String, String> mapParam) throws WriterException, IOException{
+    @PostMapping(value = "/generate", consumes = MediaType.IMAGE_PNG_VALUE)
+    public byte[] generateQr(@RequestBody Map<String, String> mapParam) throws WriterException, IOException {
 
-		System.out.println("Request to generate qr for "+mapParam);
+        log.info("Request to generate qr code for : {} ", mapParam);
 
-		byte[] imageBytes = getQRCodeImage(mapParam.toString(), 500, 500);
+        return getQRCodeImage(mapParam.toString(), 500, 500);
+    }
 
-		String b64 =Base64.encodeBase64String(imageBytes);
+    @GetMapping(value = "/static", produces = MediaType.IMAGE_PNG_VALUE)
+    public byte[] generateStaticQr() throws WriterException, IOException {
 
-		return "data:image/png;base64,"+b64;
-	}
+        Map<String, String> map = new HashMap<>();
 
-	@GetMapping(value="/static",produces=MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public String generateStaticQr() throws WriterException, IOException{
+        map.put("name", "Santosh Sagar");
+        map.put("age", "24");
+        map.put("work", "Programmer");
 
-		Map<String, String> map = new HashMap<>();
+        log.info("Request to generate static qr code for : {} ", map);
 
-		map.put("name", "Santosh Sagar");
-		map.put("age", "24");
-		map.put("work", "Programmer");
-
-		System.out.println("Request to generate static qr for "+map);
-
-
-		byte[] imageBytes = getQRCodeImage(map.toString(), 500, 500);
-
-		String b64 =Base64.encodeBase64String(imageBytes);
-
-		return "data:image/png;base64,"+b64;
-
-	}
+        return getQRCodeImage(map.toString(), 500, 500);
+    }
 
 
-	private byte[] getQRCodeImage(String text, int width, int height) throws WriterException, IOException {
+    private byte[] getQRCodeImage(String text, int width, int height) throws WriterException, IOException {
 
-		QRCodeWriter qrCodeWriter = new QRCodeWriter();
-		BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
 
-		ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-		MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
-		byte[] pngData = pngOutputStream.toByteArray(); 
-		return pngData;
-	}
-
-
+        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+        return pngOutputStream.toByteArray();
+    }
 
 }
